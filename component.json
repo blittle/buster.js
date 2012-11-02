@@ -1,0 +1,8 @@
+{
+    "name": "buster.js",
+    "version": "0.6.2",
+    "main": ["./buster-test.js", "./buster-test.css"],
+    "dependencies": {
+    
+    }
+}
