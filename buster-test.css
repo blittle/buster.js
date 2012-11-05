@@ -44,7 +44,7 @@ body.buster-test {
 
 .buster-test .success h3:before {
     color: #3c3;
-    content: "✓";
+    content: '\002713';
     padding-right: 6px;
 }
 
@@ -66,7 +66,7 @@ body.buster-test {
 
 .buster-test .failure h3:before,
 .buster-test .error h3:before {
-    content: "✖";
+    content: "x";
     padding-right: 6px;
 }
 
