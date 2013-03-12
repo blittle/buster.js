@@ -43,13 +43,9 @@ define(function() {
 	 *
 	 * @constructor
 	 */
-	function Promise(_name) {
-        if(_name) {
-            this.name = _name;
-        }
-    }
+	function Promise() {}
 
-	Promise.prototype = {
+	Promise.prototype = freeze({
 		always: function(alwaysback, progback) {
 			return this.then(alwaysback, alwaysback, progback);
 		},
@@ -57,7 +53,7 @@ define(function() {
 		otherwise: function(errback) {
 			return this.then(undef, errback);
 		}
-	};
+	});
 
 	/**
 	 * Create an already-resolved promise for the supplied value
@@ -78,7 +74,7 @@ define(function() {
 			}
 		};
 
-		return p;
+		return freeze(p);
 	}
 
 	/**
@@ -101,7 +97,7 @@ define(function() {
 			}
 		};
 
-		return p;
+		return freeze(p);
 	}
 
 	/**
@@ -133,7 +129,7 @@ define(function() {
 	 *
 	 * @returns {Deferred}
 	 */
-	function defer(name) {
+	function defer() {
 		var deferred, promise, listeners, progressHandlers, _then, _progress, complete;
 
 		listeners = [];
@@ -275,7 +271,7 @@ define(function() {
 		// Promise and Resolver parts
 		// Freeze Promise and Resolver APIs
 
-		promise = new Promise(name);
+		promise = new Promise();
 		promise.then = deferred.then = then;
 
 		/**
@@ -284,7 +280,7 @@ define(function() {
 		 * @name promise
 		 * @type {Promise}
 		 */
-		deferred.promise = promise;//freeze(promise);
+		deferred.promise = freeze(promise);
 
 		/**
 		 * The {@link Resolver} for this {@link Deferred}
@@ -292,11 +288,11 @@ define(function() {
 		 * @name resolver
 		 * @class Resolver
 		 */
-		deferred.resolver = {
+		deferred.resolver = freeze({
 			resolve:  (deferred.resolve  = resolve),
 			reject:   (deferred.reject   = reject),
 			progress: (deferred.progress = progress)
-		};
+		});
 
 		return deferred;
 	}
@@ -5794,11 +5790,6 @@ buster.testContext = (function () {
                 ctx.then(function (context) {
                     deferred.resolve(bctx.filter(parse(context), filter));
                 });
-
-                if(ctx.name) {
-                    deferred.promise.name = ctx.name;
-                }
-
                 compiled.push(deferred.promise);
             } else {
                 ctx = bctx.filter(parse(ctx), filter);
@@ -5875,11 +5866,11 @@ if (typeof module == "object") {
     }
 
     function asyncContext(name, callback) {
-        var d = when.defer(name);
+        var d = when.defer();
         callback(function (spec) {
             d.resolver.resolve(createContext(name, spec));
         });
-        d.promise.name = name;
+        d.promise.name = "deferred " + name;
         testContext.emit("create", d.promise);
         return d.promise;
     }
